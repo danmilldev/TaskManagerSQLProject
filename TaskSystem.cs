@@ -70,6 +70,10 @@ namespace TaskManagerSQLProject
                             Console.Clear();
                             MethodHandler(DeleteTask);
                             break;
+                        case 4:
+                            Console.Clear();
+                            MethodHandler(UpdateTask);
+                            break;
                     }
                 }
             }
@@ -164,9 +168,31 @@ namespace TaskManagerSQLProject
             }
         }
 
-        void UpdateTask()
+        void UpdateTask(SqlConnection connection)
         {
             //update a task and search it by id
+
+            GetAllTasks(connection);
+
+            Console.Write("ID From Task to delete:");
+
+            var result = int.TryParse(Console.ReadLine(), out int taskId);
+
+            if (result)
+            {
+                Console.Write("New Task Name: ");
+                string taskName = Console.ReadLine();
+
+                if(!string.IsNullOrEmpty(taskName))
+                {
+                    string updateTask = $"UPDATE Task SET Task_Name = '{taskName}' WHERE Task_Id = {taskId}";
+
+                    using(SqlCommand updateTaskCommand = new SqlCommand(updateTask, connection))
+                    {
+                        updateTaskCommand.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         //implement it
