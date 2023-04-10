@@ -177,21 +177,28 @@ namespace TaskManagerSQLProject
             Console.Write("ID From Task to delete:");
 
             var result = int.TryParse(Console.ReadLine(), out int taskId);
-
-            if (result)
+            
+            if(tasksList.Exists(t => t.TaskId == taskId))
             {
-                Console.Write("New Task Name: ");
-                string taskName = Console.ReadLine();
-
-                if(!string.IsNullOrEmpty(taskName))
+                if (result)
                 {
-                    string updateTask = $"UPDATE Task SET Task_Name = '{taskName}' WHERE Task_Id = {taskId}";
+                    Console.Write("New Task Name: ");
+                    string taskName = Console.ReadLine();
 
-                    using(SqlCommand updateTaskCommand = new SqlCommand(updateTask, connection))
+                    if (!string.IsNullOrEmpty(taskName))
                     {
-                        updateTaskCommand.ExecuteNonQuery();
+                        string updateTask = $"UPDATE Task SET Task_Name = '{taskName}' WHERE Task_Id = {taskId}";
+
+                        using (SqlCommand updateTaskCommand = new SqlCommand(updateTask, connection))
+                        {
+                            updateTaskCommand.ExecuteNonQuery();
+                        }
                     }
                 }
+            }
+            else
+            {
+                Console.WriteLine("No Such taskid found.");
             }
         }
 
