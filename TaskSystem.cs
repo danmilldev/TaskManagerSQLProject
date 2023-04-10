@@ -21,7 +21,6 @@ namespace TaskManagerSQLProject
         {
             string connectionStringText = File.ReadAllText(Path.Combine(desktopPath + Path.DirectorySeparatorChar + "connectionstring.txt"));
             connectionString = connectionStringText;
-            NextID = GetLastID();
             Menu();
         }
 
@@ -108,6 +107,7 @@ namespace TaskManagerSQLProject
 
         void CreateNewTask(SqlConnection connection)
         {
+            NextID = GetLastID();
             //creates a new entry in the table and makes a new task
             Console.Write("New TaskName:");
 
@@ -147,7 +147,14 @@ namespace TaskManagerSQLProject
                 {
                     using (SqlCommand deleteTaskCommand = new SqlCommand(deleteTask, connection))
                     {
-                        deleteTaskCommand.ExecuteNonQuery();
+                        if(deleteTaskCommand.ExecuteNonQuery() != 0)
+                        {
+                            deleteTaskCommand.ExecuteNonQuery();
+                        }
+                        else if(deleteTaskCommand.ExecuteNonQuery() == 0)
+                        {
+                            Console.WriteLine("No Task was deleted.");
+                        }
                     }
                 }
                 catch (SqlException sqlException)
