@@ -44,7 +44,23 @@ namespace TaskManagerSQLProject
         {
 
             //displays a menu to change view alls tasks or update and remove tasks...
-            MethodHandler(GetAllTasks);
+
+            Console.WriteLine("1. Show All Tasks.");
+            Console.WriteLine("2. Create a new Task.");
+            Console.WriteLine("3. Delete a Task.");
+            Console.WriteLine("4. Edit a Task.");
+
+            var result = int.TryParse(Console.ReadLine(), out int input);
+
+            if(result)
+            {
+                switch (input)
+                {
+                    case 1:
+                        MethodHandler(GetAllTasks);
+                        break;
+                }
+            }
         }
 
         void GetAllTasks(SqlConnection connection)
@@ -71,9 +87,27 @@ namespace TaskManagerSQLProject
             }
         }
 
-        void CreateNewTask()
+        void CreateNewTask(SqlConnection connection)
         {
             //creates a new entry in the table and makes a new task
+            Console.Write("New TaskName:");
+
+            string taskName = Console.ReadLine();
+
+            if(!string.IsNullOrEmpty(taskName))
+            {
+                string createNewTask = $"INSERT INTO Task VALUES({++NextID},'{taskName}')";
+
+                using (SqlCommand createNewTaskCommand = new SqlCommand(createNewTask, connection))
+                {
+                    createNewTaskCommand.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error: No Task Name");
+                CreateNewTask(connection);
+            }
         }
 
         void DeleteTask()
@@ -91,7 +125,30 @@ namespace TaskManagerSQLProject
         {
             //gets a list of ids and returns the lastid it was ending with
             //throw new NotImplementedException();
-            return 0;
+
+            List<int> listOfIds = new();
+
+            string getLastID = "SELECT Task_Id FROM Task";
+            using(SqlConnection conn = new(connectionString))
+            {
+                conn.Open();
+
+                using(SqlCommand cmd = new SqlCommand(getLastID,conn))
+                {
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        int id = reader.GetInt32(0);
+
+                        listOfIds.Add(id);
+                    }
+                }
+
+                conn.Close();
+            }
+
+            return listOfIds.Last();
         }
 
     }
