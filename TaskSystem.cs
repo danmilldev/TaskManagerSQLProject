@@ -44,7 +44,7 @@ namespace TaskManagerSQLProject
 
             //displays a menu to change view alls tasks or update and remove tasks...
 
-            while(true)
+            while (true)
             {
                 Console.WriteLine("1. Show All Tasks.");
                 Console.WriteLine("2. Create a new Task.");
@@ -117,7 +117,7 @@ namespace TaskManagerSQLProject
 
             string taskName = Console.ReadLine();
 
-            if(!string.IsNullOrEmpty(taskName))
+            if (!string.IsNullOrEmpty(taskName))
             {
                 string createNewTask = $"INSERT INTO Task VALUES({++NextID},'{taskName}')";
 
@@ -140,31 +140,23 @@ namespace TaskManagerSQLProject
             GetAllTasks(connection);
 
             Console.Write("ID From Task to delete:");
-
             var result = int.TryParse(Console.ReadLine(), out int taskId);
 
-            if(result)
+            if (tasksList.Exists(t => t.TaskId == taskId))
             {
-                string deleteTask = $"DELETE FROM Task WHERE Task_Id = {taskId}";
-
-                try
+                if (result)
                 {
+                    string deleteTask = $"DELETE FROM Task WHERE Task_Id = {taskId}";
+
                     using (SqlCommand deleteTaskCommand = new SqlCommand(deleteTask, connection))
                     {
-                        if(deleteTaskCommand.ExecuteNonQuery() != 0)
-                        {
-                            deleteTaskCommand.ExecuteNonQuery();
-                        }
-                        else if(deleteTaskCommand.ExecuteNonQuery() == 0)
-                        {
-                            Console.WriteLine("No Task was deleted.");
-                        }
+                        deleteTaskCommand.ExecuteNonQuery();
                     }
                 }
-                catch (SqlException sqlException)
-                {
-                    Console.WriteLine("SQL ERROR:" + sqlException);
-                }
+            }
+            else
+            {
+                Console.WriteLine("No Such taskid found.");
             }
         }
 
@@ -177,8 +169,8 @@ namespace TaskManagerSQLProject
             Console.Write("ID From Task to delete:");
 
             var result = int.TryParse(Console.ReadLine(), out int taskId);
-            
-            if(tasksList.Exists(t => t.TaskId == taskId))
+
+            if (tasksList.Exists(t => t.TaskId == taskId))
             {
                 if (result)
                 {
@@ -211,11 +203,11 @@ namespace TaskManagerSQLProject
             List<int> listOfIds = new();
 
             string getLastID = "SELECT Task_Id FROM Task";
-            using(SqlConnection conn = new(connectionString))
+            using (SqlConnection conn = new(connectionString))
             {
                 conn.Open();
 
-                using(SqlCommand cmd = new SqlCommand(getLastID,conn))
+                using (SqlCommand cmd = new SqlCommand(getLastID, conn))
                 {
                     SqlDataReader reader = cmd.ExecuteReader();
 
