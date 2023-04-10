@@ -45,26 +45,37 @@ namespace TaskManagerSQLProject
 
             //displays a menu to change view alls tasks or update and remove tasks...
 
-            Console.WriteLine("1. Show All Tasks.");
-            Console.WriteLine("2. Create a new Task.");
-            Console.WriteLine("3. Delete a Task.");
-            Console.WriteLine("4. Edit a Task.");
-
-            var result = int.TryParse(Console.ReadLine(), out int input);
-
-            if(result)
+            while(true)
             {
-                switch (input)
+                Console.WriteLine("1. Show All Tasks.");
+                Console.WriteLine("2. Create a new Task.");
+                Console.WriteLine("3. Delete a Task.");
+                Console.WriteLine("4. Edit a Task.");
+                Console.Write("Input:");
+
+                var result = int.TryParse(Console.ReadLine(), out int input);
+
+                if (result)
                 {
-                    case 1:
-                        MethodHandler(GetAllTasks);
-                        break;
+                    switch (input)
+                    {
+                        case 1:
+                            Console.Clear();
+                            MethodHandler(GetAllTasks);
+                            break;
+                        case 2:
+                            Console.Clear();
+                            MethodHandler(CreateNewTask);
+                            break;
+                    }
                 }
             }
         }
 
         void GetAllTasks(SqlConnection connection)
         {
+            tasksList.Clear();
+
             //displays all tasks as a structured list in the console
             string getAllTasks = "SELECT * FROM Task";
             SqlCommand getAllTasksCommand = new SqlCommand(getAllTasks, connection);
@@ -78,13 +89,17 @@ namespace TaskManagerSQLProject
 
                 tasksList.Add(new Task { TaskId = id, TaskName = taskName });
             }
-            
+
+            Console.WriteLine("---TASKS----");
+
+            Console.WriteLine("TaskID\t\tTaskName");
             //display all data from the list 
             foreach (var task in tasksList)
             {
-                Console.WriteLine("TaskID\t\tTaskName");
                 Console.WriteLine(task.TaskId + "\t\t" + task.TaskName);
             }
+
+            Console.WriteLine("---TASKS----");
         }
 
         void CreateNewTask(SqlConnection connection)
