@@ -67,6 +67,10 @@ namespace TaskManagerSQLProject
                             Console.Clear();
                             MethodHandler(CreateNewTask);
                             break;
+                        case 3:
+                            Console.Clear();
+                            MethodHandler(DeleteTask);
+                            break;
                     }
                 }
             }
@@ -125,9 +129,32 @@ namespace TaskManagerSQLProject
             }
         }
 
-        void DeleteTask()
+        void DeleteTask(SqlConnection connection)
         {
             //deletes a task and searched it by id
+
+            GetAllTasks(connection);
+
+            Console.Write("ID From Task to delete:");
+
+            var result = int.TryParse(Console.ReadLine(), out int taskId);
+
+            if(result)
+            {
+                string deleteTask = $"DELETE FROM Task WHERE Task_Id = {taskId}";
+
+                try
+                {
+                    using (SqlCommand deleteTaskCommand = new SqlCommand(deleteTask, connection))
+                    {
+                        deleteTaskCommand.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException sqlException)
+                {
+                    Console.WriteLine("SQL ERROR:" + sqlException);
+                }
+            }
         }
 
         void UpdateTask()
